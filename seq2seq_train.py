@@ -27,7 +27,7 @@ def main(config: DictConfig):
     lr_monitor = pl.callbacks.LearningRateMonitor()
     early_stop = pl.callbacks.EarlyStopping(monitor='val_accuracy', mode='max', patience=5)
     checkponiter = pl.callbacks.ModelCheckpoint(dirpath=config.checkpoint_dir,
-                                                filename='seq2seq_' + config.data_type + '_t5_base_{epoch:d}-{val_loss:.2f}',
+                                                filename='seq2seq_' + config.data_type + '_t5_base_{epoch:d}-{val_accuracy:.2f}',
                                                 verbose=True, save_top_k=2, monitor='val_accuracy',
                                                 mode='max', save_on_train_epoch_end=True, # save_last=True
                                                 )
