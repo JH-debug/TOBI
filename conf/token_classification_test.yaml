@@ -1,0 +1,22 @@
+# saved model_path
+model_path: "model_save/phoneme_epoch=5-val_loss=0.16.ckpt"
+
+# data & model module
+pretrained_model: "klue/roberta-large"
+batch_size: 8
+num_workers: 1
+data_type: "phoneme"
+train_file: "processed/train.json"
+validation_file: "processed/val.json"
+test_file: "processed/test.json"
+
+# trainer
+accelerator: "auto"
+devices: [2]
+max_epochs: 1
+accumulate_grad_batches: 4
+seed: 1234
+
+# wandb logger
+project: TOBI
+name: token_classification_test_phoneme_cm

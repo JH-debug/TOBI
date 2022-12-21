@@ -1,0 +1,21 @@
+# data & model module
+pretrained_model:  monologg/kobigbird-bert-base  # "klue/roberta-large"
+batch_size: 8
+num_workers: 1
+data_type: "grapheme"
+train_file: "processed/train.json"
+validation_file: "processed/val.json"
+
+# trainer
+accelerator: "auto"
+devices: [0,1,2,3]
+max_epochs: 200
+check_val_every_n_epoch: 1
+accumulate_grad_batches: 16
+log_every_n_steps: 100
+checkpoint_dir: "model_save"
+seed: 1234
+
+# wandb logger
+project: TOBI
+name: token_classification_bigbird_grapheme
