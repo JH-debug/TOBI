@@ -1,0 +1,16 @@
+# data & model module
+pretrained_model: "KETI-AIR/ke-t5-base-ko"
+batch_size: 8
+num_workers: 1
+data_type: "phoneme"
+train_file: "processed/seq2seq_test.json"
+validation_file: "processed/seq2seq_val.json"
+
+# trainer
+accelerator: "auto"
+devices: [3]
+max_epochs: 200
+check_val_every_n_epoch: 1
+accumulate_grad_batches: 16
+log_every_n_steps: 100
+seed: 1234
