@@ -24,11 +24,25 @@ def main(config: DictConfig):
     model = Seq2SeqModelTransformer(pretrained_model_name_or_path=config.pretrained_model)
     model.train()
 
+    lr_monitor = pl.callbacks.LearningRateMonitor()
+    early_stop = pl.callbacks.EarlyStopping(monitor='val_loss', mode='max', patience=3)
+    checkponiter = pl.callbacks.ModelCheckpoint(dirpath=config.checkpoint_dir,
+                                                filename=config.data_type + '_t5_base_{epoch:d}-{val_loss:.2f}',
+                                                verbose=True, save_top_k=2, monitor='val_loss',
+                                                mode='min', save_on_train_epoch_end=True, # save_last=True
+                                                )
+
     trainer = pl.Trainer(accelerator=config.accelerator,
                          devices=config.devices,
                          check_val_every_n_epoch=config.check_val_every_n_epoch,
                          log_every_n_steps=config.log_every_n_steps,
-                         accumulate_grad_batches=config.accumulate_grad_batches)
+                         accumulate_grad_batches=config.accumulate_grad_batches,
+                         enable_checkpointing = True,
+                         enable_progress_bar = True,
+                         enable_model_summary = True,
+                         callbacks = [lr_monitor, checkponiter, early_stop],
+                         logger = WandbLogger(project=config.project, name=config.name),
+                         )
     trainer.fit(model, dm)
 
 

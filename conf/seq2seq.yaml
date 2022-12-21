@@ -2,15 +2,20 @@
 pretrained_model: "KETI-AIR/ke-t5-base-ko"
 batch_size: 8
 num_workers: 1
-data_type: "phoneme"
-train_file: "processed/seq2seq_test.json"
+data_type: "grapheme"
+train_file: "processed/seq2seq_train.json"
 validation_file: "processed/seq2seq_val.json"
 
 # trainer
 accelerator: "auto"
-devices: [3]
+devices: [2]
 max_epochs: 200
 check_val_every_n_epoch: 1
 accumulate_grad_batches: 16
 log_every_n_steps: 100
+checkpoint_dir: "model_save"
 seed: 1234
+
+# wandb logger
+project: TOBI
+name: seq2seq_t5_base_grapheme
