@@ -140,11 +140,7 @@ class TokenClassificationDataModule(TransformerDataModule):
 
 
 if __name__ == "__main__":
-    import json
     from transformers import AutoTokenizer
-
-    with open("processed/data.json", "r") as f:
-        data = json.load(f)
 
     tokenizer = AutoTokenizer.from_pretrained("klue/roberta-large")
     dm = TokenClassificationDataModule(batch_size=1,
