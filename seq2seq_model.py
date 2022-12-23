@@ -38,8 +38,8 @@ class Seq2SeqModelTransformer(Seq2SeqTransformer):
         self,
         *args,
         downstream_model_type: Type[_BaseAutoModelClass] = transformers.AutoModelForSeq2SeqLM,
-        n_gram: int = 2,
-        smooth: bool = False,
+        n_gram: int = 1,
+        smooth: bool = True,
         **kwargs,
     ) -> None:
         super().__init__(downstream_model_type, *args, **kwargs)
@@ -53,15 +53,16 @@ class Seq2SeqModelTransformer(Seq2SeqTransformer):
         # wrap targets in list as score expects a list of potential references
         result = self.bleu(preds=pred_lns, target=tgt_lns)
         self.log(f"{prefix}_bleu_score", result, on_step=False, on_epoch=True, prog_bar=True)
-
+        print(tgt_lns)
+        print(pred_lns)
         correct = 0
         len_ = 0
         for tgt, pred in zip(tgt_lns, pred_lns):
-            break_label = [n for n in range(len(tgt)) if tgt.find('break', n) == n]
-            break_pred = [n for n in range(len(pred)) if pred.find('break', n) == n]
+            break_label = [i for i, j in enumerate(tgt.split()) if j == 'break']
+            break_pred = [i for i, j in enumerate(pred.split()) if j == 'break']
             correct += len(set(break_label) & set(break_pred))
             len_ += len(break_label)
-        accuracy = correct / len_ * 100
+        accuracy = (correct / len_) * 100
         self.log(f"{prefix}_accuracy", accuracy, on_step=False, on_epoch=True, prog_bar=True)
 
     def configure_metrics(self, stage: str):

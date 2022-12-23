@@ -19,8 +19,10 @@ def main(config: DictConfig):
                            preprocessing_num_workers=config.num_workers,
                            train_file=config.train_file,
                            validation_file=config.validation_file,
-                           tokenizer=tokenizer)
-
+                           tokenizer=tokenizer,
+                           max_source_length=128,
+                           max_target_length=128
+                           )
     model = Seq2SeqModelTransformer(pretrained_model_name_or_path=config.pretrained_model)
     model.train()
 
@@ -40,7 +42,7 @@ def main(config: DictConfig):
                          enable_checkpointing = True,
                          enable_progress_bar = True,
                          enable_model_summary = True,
-                         callbacks = [lr_monitor, checkponiter, early_stop],
+                         callbacks = [lr_monitor, checkponiter],
                          logger = WandbLogger(project=config.project, name=config.name),
                          )
     trainer.fit(model, dm)
