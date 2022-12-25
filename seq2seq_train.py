@@ -19,6 +19,7 @@ def main(config: DictConfig):
                            preprocessing_num_workers=config.num_workers,
                            train_file=config.train_file,
                            validation_file=config.validation_file,
+                           data_type=config.data_type,
                            tokenizer=tokenizer,
                            max_source_length=128,
                            max_target_length=128
@@ -27,11 +28,11 @@ def main(config: DictConfig):
     model.train()
 
     lr_monitor = pl.callbacks.LearningRateMonitor()
-    early_stop = pl.callbacks.EarlyStopping(monitor='val_accuracy', mode='max', patience=5)
+    early_stop = pl.callbacks.EarlyStopping(monitor='val_bleu_score', mode='max', patience=5)
     checkponiter = pl.callbacks.ModelCheckpoint(dirpath=config.checkpoint_dir,
-                                                filename='seq2seq_' + config.data_type + '_t5_base_{epoch:d}-{val_accuracy:.2f}',
-                                                verbose=True, save_top_k=2, monitor='val_accuracy',
-                                                mode='max', save_on_train_epoch_end=True, # save_last=True
+                                                filename='seq2seq_' + config.data_type + '_t5_base_{epoch:d}-{val_bleu_score:.2f}',
+                                                verbose=True, save_top_k=2, monitor='val_bleu_score',
+                                                mode='max', save_on_train_epoch_end=True, save_last=True
                                                 )
 
     trainer = pl.Trainer(accelerator=config.accelerator,
