@@ -57,7 +57,7 @@ class Seq2SeqModelTransformer(Seq2SeqTransformer):
         loss, logits = outputs[:2]
         if self.should_compute_generate_metrics:
             self.compute_generate_metrics(batch, prefix)
-        if prefix == 'validation' or 'test':
+        if prefix == 'val' or 'test':
             labels = batch['labels'][0]
             input_ids = batch['input_ids'][0]
             attention_mask = batch['attention_mask'][0]

@@ -9,7 +9,7 @@ from data import TokenClassificationDataModule
 from model import TokenClassificationTransformer
 
 
-@hydra.main(version_base=None, config_path='conf', config_name='token_classification_test.yaml')
+@hydra.main(version_base=None, config_path='conf', config_name='token_classification_test')
 def main(config: DictConfig):
     logging.info(f'Hydra config: {OmegaConf.to_yaml(config)}')
     seed_everything(config.seed)
