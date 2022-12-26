@@ -1,6 +1,6 @@
 import json
 
-with open("processed/all_data.json", "r") as f:
+with open("../processed/all_data.json", "r") as f:
     data = json.load(f)
 
 """
@@ -28,5 +28,5 @@ for d in data:
     d['text_label'] = ' '.join(d['text_label'])
     del d['label']
 
-with open("processed/seq2seq_all_data.json", "w", encoding='UTF-8') as f:
+with open("../processed/seq2seq_all_data.json", "w", encoding='UTF-8') as f:
     json.dump(data, f, indent=1, ensure_ascii=False)

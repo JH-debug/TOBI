@@ -19,7 +19,7 @@ def make_split_data(type="token_classfication"):
                 split_data = val
             else:
                 split_data = test
-            with open(f"processed/{split}.json", "w", encoding='UTF-8') as f:
+            with open(f"../processed/{split}.json", "w", encoding='UTF-8') as f:
                 json.dump(split_data, f, indent=1, ensure_ascii=False)
 
     else:
