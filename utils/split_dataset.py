@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 
 def make_split_data(type="token_classfication"):
     if type == "token_classification":
-        with open("processed/all_data.json", "r") as f:
+        with open("../processed/all_data.json", "r") as f:
             data = json.load(f)
 
         train, test = train_test_split(data, test_size=0.2, random_state=42)
@@ -23,7 +23,7 @@ def make_split_data(type="token_classfication"):
                 json.dump(split_data, f, indent=1, ensure_ascii=False)
 
     else:
-        with open("processed/seq2seq_all_data.json", "r") as f:
+        with open("../processed/seq2seq_all_data.json", "r") as f:
             data = json.load(f)
 
         train, test = train_test_split(data, test_size=0.2, random_state=42)
@@ -38,7 +38,7 @@ def make_split_data(type="token_classfication"):
                 split_data = val
             else:
                 split_data = test
-            with open(f"processed/seq2seq_{split}.json", "w", encoding='UTF-8') as f:
+            with open(f"../processed/seq2seq_{split}.json", "w", encoding='UTF-8') as f:
                 json.dump(split_data, f, indent=1, ensure_ascii=False)
 
 

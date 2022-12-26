@@ -132,4 +132,5 @@ class LanguageModelingTransformer(TaskTransformer):
             )
         inputs = self.tokenizer(text, return_tensors="pt")
         inputs = inputs.to(device)
-        return self.model.generate(inputs["input_ids"], **kwargs)
+        generated_tokens = self.model.generate(inputs['input_ids'], **kwargs)
+        return self.tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)
