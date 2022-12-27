@@ -80,14 +80,18 @@ class Seq2SeqModelTransformer(Seq2SeqTransformer):
         self.log_dict({f"{prefix}_{k}": v for k, v in rouge_result.items()}, on_step=False, on_epoch=True, prog_bar=True)
 
         correct = 0
-        len_ = 0
+        label_len = 0
+        pred_len = 0
         for tgt, pred in zip(tgt_lns, pred_lns):
             break_label = [i for i, j in enumerate(tgt.split()) if j == 'break']
             break_pred = [i for i, j in enumerate(pred.split()) if j == 'break']
             correct += len(set(break_label) & set(break_pred))
-            len_ += len(break_label)
-        accuracy = (correct / len_)
-        self.log(f"{prefix}_break_accuracy", accuracy, on_step=False, on_epoch=True, prog_bar=True)
+            label_len += len(break_label)
+            pred_len += len(break_pred)
+        recall = (correct / label_len)
+        precision = (correct / pred_len)
+        self.log(f"{prefix}_break_recall", recall, on_step=False, on_epoch=True, prog_bar=True)
+        self.log(f"{prefix}_break_precision", precision, on_step=False, on_epoch=True, prog_bar=True)
 
     def configure_metrics(self, stage: str):
         self.bleu = BLEUScore(self.n_gram, self.smooth)
