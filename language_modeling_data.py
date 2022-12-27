@@ -31,6 +31,7 @@ class LanguageModelingDataModule(TransformerDataModule):
 
     def __init__(self, *args, data_type: str = "grapheme", block_size: int = 128, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        self.tokenizer.add_tokens(["break"])
         self.block_size = block_size
         self.data_type = data_type
 

@@ -52,8 +52,10 @@ class LanguageModelingTransformer(TaskTransformer):
         self.rouge = ROUGEScore()
 
     def on_fit_start(self):
+        self.tokenizer.add_tokens(["break"])
         tokenizer_length = len(self.tokenizer)
         self.model.resize_token_embeddings(tokenizer_length)
+        print("Token length: ", tokenizer_length)
 
     def _step(self, prefix: str, batch):
         outputs = self.model(**batch)
@@ -92,20 +94,24 @@ class LanguageModelingTransformer(TaskTransformer):
                       prog_bar=True)
 
         correct = 0
-        len_ = 0
+        label_len = 0
+        pred_len = 0
         for tgt, pred in zip(tgt_lns, pred_lns):
-            break_label = [i for i, j in enumerate(tgt.split()) if j == 'break']
+            break_label = [i for i, j in enumerate(tgt.split()) if j == 'break'] #
             break_pred = [i for i, j in enumerate(pred.split()) if j == 'break']
             correct += len(set(break_label) & set(break_pred))
-            len_ += len(break_label)
-        accuracy = (correct / len_)
-        self.log(f"{prefix}_break_accuracy", accuracy, on_step=False, on_epoch=True, prog_bar=True)
+            label_len += len(break_label)
+            pred_len += len(break_pred)
+        recall = (correct / label_len)
+        precision = (correct / pred_len)
+        self.log(f"{prefix}_break_recall", recall, on_step=False, on_epoch=True, prog_bar=True)
+        self.log(f"{prefix}_break_precision", precision, on_step=False, on_epoch=True, prog_bar=True)
 
     def generate(self, input_ids: torch.Tensor):
         max_length = self.val_target_max_length if self.val_target_max_length else self.model.config.max_length
         num_beams = self.num_beams if self.num_beams else self.model.config.num_beams
         generated_tokens = self.model.generate(
-            input_ids=input_ids, max_length=max_length, num_beams=num_beams
+            input_ids=input_ids, max_length=max_length, num_beams=num_beams, do_sample=True
         )
         # in case the batch is shorter than max length, the output should be padded
         if generated_tokens.shape[-1] < max_length:

@@ -22,13 +22,13 @@ def main(config: DictConfig):
                                     data_type=config.data_type,
                                     tokenizer=tokenizer,
                                     )
-    model = LanguageModelingTransformer(pretrained_model_name_or_path=config.pretrained_model)
+    model = LanguageModelingTransformer(pretrained_model_name_or_path=config.pretrained_model, tokenizer=tokenizer)
     model.train()
 
     lr_monitor = pl.callbacks.LearningRateMonitor()
-    early_stop = pl.callbacks.EarlyStopping(monitor='val_bleu_score', mode='max', patience=5)
+    early_stop = pl.callbacks.EarlyStopping(monitor='val_loss', mode='min', patience=2)
     checkponiter = pl.callbacks.ModelCheckpoint(dirpath=config.checkpoint_dir,
-                                                filename='LM_' + config.data_type + '_koelectra_{epoch:d}-{val_bleu_score:.2f}',
+                                                filename='LM_' + config.data_type + '_kogpt_{epoch:d}-{val_bleu_score:.2f}',
                                                 verbose=True, save_top_k=2, monitor='val_bleu_score',
                                                 mode='max', save_on_train_epoch_end=True
                                                 )

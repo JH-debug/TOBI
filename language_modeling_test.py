@@ -15,6 +15,7 @@ def main(config: DictConfig):
     seed_everything(config.seed)
 
     tokenizer = AutoTokenizer.from_pretrained(config.pretrained_model)
+    tokenizer.add_tokens(['break'])
     dm = LanguageModelingDataModule(batch_size=config.batch_size,
                                     preprocessing_num_workers=config.num_workers,
                                     data_type=config.data_type,
@@ -23,7 +24,8 @@ def main(config: DictConfig):
                                     test_file=config.test_file,
                                     tokenizer=tokenizer)
 
-    model = LanguageModelingTransformer(pretrained_model_name_or_path=config.pretrained_model)
+    model = LanguageModelingTransformer(pretrained_model_name_or_path=config.pretrained_model, tokenizer=tokenizer)
+    model.on_fit_start()
 
     trainer = pl.Trainer(accelerator=config.accelerator,
                          devices=config.devices,
@@ -32,7 +34,10 @@ def main(config: DictConfig):
                          enable_progress_bar=True,
                          enable_model_summary=True
                          )
-    trainer.test(model=model, ckpt_path=config.model_path, datamodule=dm)
+    trainer.test(model=model, datamodule=dm, ckpt_path=config.model_path)
+
+    print(trainer.model.inference("엄마, 떡국 먹으면 한 살 더 먹어요?"))
+    print(trainer.model.inference('그리스 신화에 나오는 태양과 예언 및 광명 의술 궁술 음악 시를 주관하는 신이다.'))
 
 
 if __name__ == "__main__":

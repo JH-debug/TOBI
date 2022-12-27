@@ -1,8 +1,8 @@
 # data & model module
-pretrained_model: "monologg/koelectra-base-v3-discriminator"
-batch_size: 8
+pretrained_model: skt/ko-gpt-trinity-1.2B-v0.5 # monologg/koelectra-base-v3-discriminator
+batch_size: 2
 num_workers: 1
-data_type: "phoneme"
+data_type: "grapheme"
 train_file: "processed/seq2seq_train.json"
 validation_file: "processed/seq2seq_val.json"
 test_file: "processed/seq2seq_test.json"
@@ -19,7 +19,7 @@ seed: 1234
 
 # wandb logger
 project: TOBI
-name: LM_koelectra_phoneme
+name: LM_kogpt_grapheme
 
 # saved model_path
-model_path: "model_save/LM_grapheme_koelectra_epoch=16-val_bleu_score=0.07.ckpt"
+model_path: "model_save/LM_grapheme_kogpt_epoch=3-val_bleu_score=0.07.ckpt"
