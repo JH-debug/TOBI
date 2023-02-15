@@ -147,8 +147,8 @@ if __name__ == "__main__":
                                        preprocessing_num_workers=1,
                                        label_all_tokens=False,
                                        revision='master',
-                                       train_file='processed/train.json',
-                                       validation_file='processed/val.json',
+                                       train_file='../processed/train.json',
+                                       validation_file='../processed/val.json',
                                        tokenizer=tokenizer)
     dm.prepare_data()
     dm.setup('fit')

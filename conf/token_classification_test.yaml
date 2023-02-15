@@ -1,8 +1,8 @@
 # saved model_path
-model_path: "model_save/phoneme_epoch=5-val_loss=0.16.ckpt"
+model_path: "model_save/phoneme_xlm_epoch=16-val_loss=0.17.ckpt"
 
 # data & model module
-pretrained_model: "klue/roberta-large"
+pretrained_model: "xlm-roberta-base"
 batch_size: 8
 num_workers: 1
 data_type: "phoneme"
@@ -19,4 +19,4 @@ seed: 1234
 
 # wandb logger
 project: TOBI
-name: token_classification_test_phoneme_cm
+name: token_classification_xlnet_phoneme_cm

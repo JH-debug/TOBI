@@ -37,7 +37,7 @@ class LanguageModelingTransformer(TaskTransformer):
     def __init__(
         self, *args, downstream_model_type: Type[_BaseAutoModelClass] = transformers.AutoModelForCausalLM,
             val_target_max_length: int = 128,
-            num_beams: int = 1,
+            num_beams: int = 5,
             n_gram: int = 1,
             smooth: bool = True,
             **kwargs
@@ -80,11 +80,11 @@ class LanguageModelingTransformer(TaskTransformer):
 
     def validation_epoch_end(self, outputs):
         print(self.tokenize_labels(outputs[0]['labels'].unsqueeze(0)))
-        print(self.generate(outputs[0]['input_ids'].unsqueeze(0)))
+        print(self.predict(outputs[0]['input_ids'].unsqueeze(0)))
 
     def compute_generate_metrics(self, batch, prefix):
         tgt_lns = self.tokenize_labels(batch["labels"])
-        pred_lns = self.generate(batch["input_ids"])
+        pred_lns = self.predict(batch["input_ids"])
         bleu_result = self.bleu(preds=pred_lns, target=tgt_lns)
         self.log(f"{prefix}_bleu_score", bleu_result, on_step=False, on_epoch=True, prog_bar=True)
         wer_result = self.wer(preds=pred_lns, target=tgt_lns)
@@ -107,7 +107,7 @@ class LanguageModelingTransformer(TaskTransformer):
         self.log(f"{prefix}_break_recall", recall, on_step=False, on_epoch=True, prog_bar=True)
         self.log(f"{prefix}_break_precision", precision, on_step=False, on_epoch=True, prog_bar=True)
 
-    def generate(self, input_ids: torch.Tensor):
+    def predict(self, input_ids: torch.Tensor):
         max_length = self.val_target_max_length if self.val_target_max_length else self.model.config.max_length
         num_beams = self.num_beams if self.num_beams else self.model.config.num_beams
         generated_tokens = self.model.generate(
@@ -138,5 +138,5 @@ class LanguageModelingTransformer(TaskTransformer):
             )
         inputs = self.tokenizer(text, return_tensors="pt")
         inputs = inputs.to(device)
-        generated_tokens = self.model.generate(inputs['input_ids'], **kwargs)
+        generated_tokens = self.predict(inputs['input_ids'], **kwargs)
         return self.tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)

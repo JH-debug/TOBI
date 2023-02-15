@@ -111,13 +111,20 @@ class LanguageModelingDataModule(TransformerDataModule):
 
 
 if __name__ == "__main__":
-    from transformers import AutoTokenizer
+    from transformers import AutoTokenizer, AutoModelForCausalLM
 
-    tokenizer = AutoTokenizer.from_pretrained("klue/roberta-large")
+    tokenizer = AutoTokenizer.from_pretrained("skt/ko-gpt-trinity-1.2B-v0.5")
     dm = LanguageModelingDataModule(batch_size=1,
                                     preprocessing_num_workers=1,
-                                    train_file='processed/seq2seq_train.json',
-                                    validation_file='processed/seq2seq_val.json',
+                                    train_file='../processed/seq2seq_train.json',
+                                    validation_file='../processed/seq2seq_val.json',
                                     tokenizer=tokenizer)
     dm.setup('fit')
     print(next(iter(dm.train_dataloader())))
+    input_ids = next(iter(dm.train_dataloader()))['input_ids']
+    tokenizer.add_tokens(["break"])
+    tokenizer_length = len(tokenizer)
+
+    model = AutoModelForCausalLM.from_pretrained("skt/ko-gpt-trinity-1.2B-v0.5")
+    model.resize_token_embeddings(tokenizer_length)
+    print(model.generate(input_ids, max_length=128))

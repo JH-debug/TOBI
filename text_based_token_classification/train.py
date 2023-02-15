@@ -9,7 +9,7 @@ from data import TokenClassificationDataModule
 from model import TokenClassificationTransformer
 
 
-@hydra.main(version_base=None, config_path='conf', config_name='token_classification')
+@hydra.main(version_base=None, config_path='../conf', config_name='token_classification')
 def main(config: DictConfig):
     logging.info(f'Hydra config: {OmegaConf.to_yaml(config)}')
     seed_everything(config.seed)
@@ -32,7 +32,7 @@ def main(config: DictConfig):
     lr_monitor = pl.callbacks.LearningRateMonitor()
     early_stop = pl.callbacks.EarlyStopping(monitor='val_accuracy', mode='max', patience=5)
     checkponiter = pl.callbacks.ModelCheckpoint(dirpath=config.checkpoint_dir,
-                                                filename=config.data_type + '_bigbird_{epoch:d}-{val_loss:.2f}',
+                                                filename=config.data_type + '_xlm_{epoch:d}-{val_loss:.2f}',
                                                 verbose=True, save_top_k=2, monitor='val_loss',
                                                 mode='min', save_on_train_epoch_end=True, # save_last=True
                                                 )

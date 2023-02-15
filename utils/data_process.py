@@ -2,8 +2,8 @@
 import os
 import pandas as pd
 
-text_path = "script/"
-label_path = "lab/"
+text_path = "../script/"
+label_path = "../lab/"
 
 file_name = []
 text = []

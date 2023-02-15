@@ -9,7 +9,7 @@ from language_modeling_data import LanguageModelingDataModule
 from language_modeling_model import LanguageModelingTransformer
 
 
-@hydra.main(version_base=None, config_path='conf', config_name='language_modeling')
+@hydra.main(version_base=None, config_path='../conf', config_name='language_modeling')
 def main(config: DictConfig):
     logging.info(f'Hydra config: {OmegaConf.to_yaml(config)}')
     seed_everything(config.seed)

@@ -1,0 +1,48 @@
+# DATA
+wav_path: "../wav/"
+phn_path: "../lab/"
+model_save_path: "../model_save/pho_seg/"
+use_only_break_index: False  # if True, use only break index to segment
+dataloader_n_workers: 10
+n_classes: 50
+
+# MODEL
+cosine_coef: 1.0  # cosine similarity coefficient
+z_proj: 64        # size of projection
+z_proj_linear: true
+z_proj_dropout: 0
+z_dim: 256
+pred_steps: 1   # number of future prediction steps
+pred_offset: 0  # offset of future prediction steps
+batch_shuffle: false  # if 'false' negative samples will be from the same utterance, if 'true' may be from different utterances
+latent_dim: 0   # latent dimension of encoder
+n_negatives: 1  # number of negative samples for contrastive loss
+
+# TRAINING
+seed: 42
+test: False      # if True, only test the
+load_ckpt: False  # if True, load the checkpoint
+batch_size: 8
+accumulate_grad_batches: 16
+accelerator: "auto"
+devices: [3]        # gpu devices
+epochs: 300
+val_check_interval : 1.0  # how often within one epoch to check the validation
+check_val_every_n_epoch: 1  # how often to check the validation (number of epochs)
+dev_run: False
+early_stop_metric: val_loss
+early_stop_mode: min
+ckpt: null
+
+# OPTIMIZER
+optimizer: adam
+momentum: 0.9
+lr: 0.0002
+lr_anneal_gamma: 1.0
+lr_anneal_step: 1000
+grad_clip: 0.5
+
+# WANDB
+project: "TOBI"
+name: "unsupervised_pho_segmentor"
+tag: default

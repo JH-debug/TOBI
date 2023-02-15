@@ -5,32 +5,34 @@ from pytorch_lightning.loggers.wandb import WandbLogger
 import hydra
 from omegaconf import DictConfig, OmegaConf
 from transformers import AutoTokenizer
-from language_modeling_data import LanguageModelingDataModule
-from language_modeling_model import LanguageModelingTransformer
+from seq2seq_data import Seq2SeqDataModule
+from seq2seq_model import Seq2SeqModelTransformer
 
 
-@hydra.main(version_base=None, config_path='conf', config_name='language_modeling')
+@hydra.main(version_base=None, config_path='../conf', config_name='seq2seq')
 def main(config: DictConfig):
     logging.info(f'Hydra config: {OmegaConf.to_yaml(config)}')
     seed_everything(config.seed)
 
     tokenizer = AutoTokenizer.from_pretrained(config.pretrained_model)
-    dm = LanguageModelingDataModule(batch_size=config.batch_size,
-                                    preprocessing_num_workers=config.num_workers,
-                                    train_file=config.train_file,
-                                    validation_file=config.validation_file,
-                                    data_type=config.data_type,
-                                    tokenizer=tokenizer,
-                                    )
-    model = LanguageModelingTransformer(pretrained_model_name_or_path=config.pretrained_model, tokenizer=tokenizer)
+    dm = Seq2SeqDataModule(batch_size=config.batch_size,
+                           preprocessing_num_workers=config.num_workers,
+                           train_file=config.train_file,
+                           validation_file=config.validation_file,
+                           data_type=config.data_type,
+                           tokenizer=tokenizer,
+                           max_source_length=128,
+                           max_target_length=128
+                           )
+    model = Seq2SeqModelTransformer(pretrained_model_name_or_path=config.pretrained_model)
     model.train()
 
     lr_monitor = pl.callbacks.LearningRateMonitor()
-    early_stop = pl.callbacks.EarlyStopping(monitor='val_loss', mode='min', patience=2)
+    early_stop = pl.callbacks.EarlyStopping(monitor='val_bleu_score', mode='max', patience=5)
     checkponiter = pl.callbacks.ModelCheckpoint(dirpath=config.checkpoint_dir,
-                                                filename='LM_' + config.data_type + '_kogpt_{epoch:d}-{val_bleu_score:.2f}',
+                                                filename='seq2seq_' + config.data_type + '_t5_base_{epoch:d}-{val_bleu_score:.2f}',
                                                 verbose=True, save_top_k=2, monitor='val_bleu_score',
-                                                mode='max', save_on_train_epoch_end=True
+                                                mode='max', save_on_train_epoch_end=True, save_last=True
                                                 )
 
     trainer = pl.Trainer(accelerator=config.accelerator,
@@ -41,7 +43,7 @@ def main(config: DictConfig):
                          enable_checkpointing = True,
                          enable_progress_bar = True,
                          enable_model_summary = True,
-                         callbacks = [lr_monitor, early_stop, checkponiter],
+                         callbacks = [lr_monitor, checkponiter],
                          logger = WandbLogger(project=config.project, name=config.name),
                          )
     trainer.fit(model, dm)

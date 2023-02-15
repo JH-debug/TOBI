@@ -9,7 +9,7 @@ from seq2seq_data import Seq2SeqDataModule
 from seq2seq_model import Seq2SeqModelTransformer
 
 
-@hydra.main(version_base=None, config_path='conf', config_name='seq2seq')
+@hydra.main(version_base=None, config_path='../conf', config_name='seq2seq')
 def main(config: DictConfig):
     logging.info(f'Hydra config: {OmegaConf.to_yaml(config)}')
     seed_everything(config.seed)

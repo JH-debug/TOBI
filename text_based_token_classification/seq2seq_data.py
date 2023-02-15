@@ -61,8 +61,9 @@ if __name__ == "__main__":
     from transformers import AutoTokenizer
 
     tokenizer = AutoTokenizer.from_pretrained("KETI-AIR/ke-t5-base-ko")
-    dm = Seq2SeqDataModule(train_file = "processed/seq2seq_all_data.json",
+    dm = Seq2SeqDataModule(train_file ="../processed/seq2seq_all_data.json",
                            batch_size=1,
+                           data_type="phoneme",
                            tokenizer=tokenizer)
     dm.setup('fit')
     print(next(iter(dm.train_dataloader())))

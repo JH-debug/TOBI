@@ -1,14 +1,17 @@
 # data & model module
-pretrained_model:  monologg/kobigbird-bert-base  # "klue/roberta-large"
+pretrained_model: xlm-roberta-base
+# monologg/koelectra-base-v3-discriminator
+# beomi/KcELECTRA-base
+# klue/roberta-large
 batch_size: 8
 num_workers: 1
-data_type: "grapheme"
+data_type: "phoneme"
 train_file: "processed/train.json"
 validation_file: "processed/val.json"
 
 # trainer
 accelerator: "auto"
-devices: [0,1,2,3]
+devices: [3]
 max_epochs: 200
 check_val_every_n_epoch: 1
 accumulate_grad_batches: 16
@@ -18,4 +21,4 @@ seed: 1234
 
 # wandb logger
 project: TOBI
-name: token_classification_bigbird_grapheme
+name: token_classification_xlm_phoneme

@@ -9,7 +9,7 @@ test_file: "processed/seq2seq_test.json"
 
 # trainer
 accelerator: "auto"
-devices: [3]
+devices: [0]
 max_epochs: 200
 check_val_every_n_epoch: 1
 accumulate_grad_batches: 16
@@ -19,7 +19,7 @@ seed: 1234
 
 # wandb logger
 project: TOBI
-name: seq2seq_t5_base_phoneme
+name: seq2seq_t5_base_grapheme
 
 # saved model_path
-model_path: "model_save/seq2seq_grapheme_t5_base_epoch=188-val_accuracy=100.00.ckpt"
+model_path: "model_save/last.ckpt"
