@@ -50,6 +50,8 @@ def train(model, classifier, trainloader, valloader, cfg, logger, device):
                 model.train()
             else:
                 model.eval()
+                for p in model.parameters():
+                    p.requires_grad = False
             classifier.train()
             wavs, _, labels, _, lengths, _ = samp
             mask = construct_mask(lengths, device).float()
@@ -62,6 +64,7 @@ def train(model, classifier, trainloader, valloader, cfg, logger, device):
             results = model.extract_features(wavs, padding_mask=None)
 
             features = get_features(results, cfg.mode)
+            del results
             logits = classifier(features).squeeze()
             if len(logits.shape) == 1:
                 logits = logits.unsqueeze(0)
@@ -102,23 +105,25 @@ def test(model, classifier, dataloader, cfg, logger, device):
     sigmoid = torch.nn.Sigmoid()
     logger.info("Evaluating model on {} samples".format(len(dataloader.dataset)))
 
-    for samp in dataloader:
-        wavs, segs, labels, _, lengths, _ = samp
-        segs = [[*segs[i][0]] + [s[1] for s in segs[i][1:]] for i in range(len(segs))]
-        wavs = wavs.to(device)
-        labels = labels.to(device)
-        results = model.extract_features(wavs, padding_mask=None)
-        features = get_features(results, cfg.mode)
-        preds = classifier(features).squeeze()
-        preds = sigmoid(preds)
-        preds = preds > 0.5
-        if cfg.batch_size == 1:
-            preds = preds.unsqueeze(0)
-        preds = [
-            torch.where(preds[i, :lengths[i]] == 1)[0].tolist() for i in range(preds.size(0))
-        ]
-        metric_tracker_harsh.update(segs, preds)
-        metric_tracker_lenient.update(segs, preds)
+    with torch.no_grad():
+        for samp in dataloader:
+            wavs, segs, labels, _, lengths, _ = samp
+            segs = [[*segs[i][0]] + [s[1] for s in segs[i][1:]] for i in range(len(segs))]
+            wavs = wavs.to(device)
+            labels = labels.to(device)
+            results = model.extract_features(wavs, padding_mask=None)
+            features = get_features(results, cfg.mode)
+            del results
+            preds = classifier(features).squeeze()
+            preds = sigmoid(preds)
+            preds = preds > 0.5
+            if cfg.batch_size == 1:
+                preds = preds.unsqueeze(0)
+            preds = [
+                torch.where(preds[i, :lengths[i]] == 1)[0].tolist() for i in range(preds.size(0))
+            ]
+            metric_tracker_harsh.update(segs, preds)
+            metric_tracker_lenient.update(segs, preds)
 
     logger.info("Computing metrics with distance threshold of {} frames".format(cfg.label_dist_threshold))
 

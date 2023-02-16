@@ -3,8 +3,8 @@
 hydra:
   run:
     dir: ./outputs/${now:%Y-%m-%d}/${exp_name}-${now:%H-%M-%S}
-exp_name: 'wav2vec_readout_fp_break-seg'
-use_only_break_index: True
+exp_name: 'wav2vec_readout_pho-seg'
+use_only_break_index: False
 wav_path: '/home/jhlee/TOBI/wav/'
 val_ratio: 0.1  # Ratio of training set to use for timit validation
 train_percent: 1.0 # Percentage of training data to use
@@ -24,8 +24,8 @@ beta2: 0.999
 momentum: 0.9
 weight_decay: 0
 pos_weight: 1.0 # BCE loss weighting
-epochs: 5
-batch_size: 1
+epochs: 50
+batch_size: 8
 lr: 0.001
-device: 'cuda:3'
-fp16: True # Use mixed precision training
+device: 'cuda:1'
+fp16: False # Use mixed precision training
